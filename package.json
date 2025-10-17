@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "core",
+    "packages/adapters",
+    "packages/console"
+  ]
+}

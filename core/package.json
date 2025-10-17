@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "type": "module",
+  "name": "@application/core",
+  "description": "Core",
+  "version": "0.1.0"
+}
