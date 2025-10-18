@@ -3,16 +3,28 @@ import { RegisterCommand } from "@application/core/commands/register";
 import { MemoryQueryRepository } from "@application/adapters/repositories/memory/query";
 import { MemoryFactRepository } from "@application/adapters/repositories/memory/fact";
 import { ConsoleNotificationService } from "@application/adapters/services/console/notification";
+import { BcryptPasswordService } from "@application/adapters/services/bcrypt/password"
 
-const queryRepository = new MemoryQueryRepository()
-const eventRepository = new MemoryFactRepository()
-const notificationService = new ConsoleNotificationService()
+async function main() {
+  const queryRepository = new MemoryQueryRepository()
+  const eventRepository = new MemoryFactRepository()
+  const notificationService = new ConsoleNotificationService()
+  const passwordService = new BcryptPasswordService()
 
-eventRepository.register(queryRepository)
+  eventRepository.register(queryRepository)
 
-const registerCommand = new RegisterCommand(eventRepository, notificationService)
-const findUserQuery = new FindUserQuery(queryRepository)
-const createdUserIdentifier = await registerCommand.execute("user@domain.com", "Password")
-const user = await findUserQuery.execute(createdUserIdentifier)
+  const registerCommand = new RegisterCommand(eventRepository, passwordService, notificationService)
+  const findUserQuery = new FindUserQuery(queryRepository)
+  const createdUserIdentifier = await registerCommand.execute({ email: "user@domain.com", password: "Password" })
 
-console.log(user)
+  if (createdUserIdentifier instanceof Error) {
+    console.error()
+    return
+  }
+
+  const user = await findUserQuery.execute(createdUserIdentifier)
+
+  console.log(user)
+}
+
+await main()
