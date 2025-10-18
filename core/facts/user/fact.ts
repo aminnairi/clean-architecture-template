@@ -1,3 +1,6 @@
-import { UserCreatedFact } from "@application/core/facts/user/user-created";
+import { UserUpdatedFactV1 } from "./user-updated-v1";
+import { UserCreatedFactV1 } from "./user-created-v1";
 
-export type UserFact = UserCreatedFact
+export type UserFact =
+  | UserCreatedFactV1
+  | UserUpdatedFactV1
