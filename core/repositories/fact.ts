@@ -1,11 +1,12 @@
 import { DomainFact } from "@application/core/facts/domain";
-import { UserFact } from "@application/core/facts/user/fact";
 import { QueryRepository } from "@application/core/repositories/query";
+import { UserFact } from "@application/core/facts/user/fact";
+import { ConcurrencyError } from "@application/core/errors/concurrency";
 
 export type Handler = (fact: DomainFact) => void
 
 export interface FactRepository {
-  findUserEventsByIdentifier(identifier: string): Promise<UserFact[]>
-  dispatch(fact: DomainFact): void
+  findUserFacts(userIdentifier: string): Promise<UserFact[]>
+  save(fact: DomainFact): Promise<ConcurrencyError | null>
   register(query: QueryRepository): void
 }
