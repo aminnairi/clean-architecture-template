@@ -1,0 +1,14 @@
+import { Fact } from "@application/core/facts";
+import { randomUUID } from "node:crypto"
+
+export class UserUpdatedFactV1 implements Fact {
+  public readonly aggregate = "user"
+  public readonly identifier = randomUUID();
+  public readonly name = "user-updated-v1";
+  public readonly date = new Date();
+
+  public constructor(public readonly version: number, public readonly data: {
+    identifier: string,
+    email: string,
+  }) { }
+}
