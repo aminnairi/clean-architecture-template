@@ -9,7 +9,7 @@ export class MemoryFactRepository implements FactRepository {
 
   public async findUserFacts(userIdentifier: string): Promise<UserFact[]> {
     return Array.from(this.facts.values()).filter(fact => {
-      return fact.aggregateIdentifier === userIdentifier
+      return fact.aggregate === "user" && fact.aggregateIdentifier === userIdentifier
     })
   }
 
