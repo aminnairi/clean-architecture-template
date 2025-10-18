@@ -23,6 +23,6 @@ export class RegisterCommand {
 
     await this.notificationService.notifyRegistrationSucceeded()
 
-    return user.data.identifier
+    return user.aggregateIdentifier
   }
 }

@@ -13,20 +13,20 @@ export class MemoryQueryRepository implements QueryRepository {
 
   public handle(fact: DomainFact): void {
     if (fact.name === "user-created-v1") {
-      this.users.push(new UserAggregate(fact.data.identifier, fact.data.email, fact.data.password, fact.data.confirmed, fact.version))
+      this.users.push(new UserAggregate(fact.aggregateIdentifier, fact.data.email, fact.data.password, fact.data.confirmed, fact.version))
       return
     }
 
     if (fact.name === "user-updated-v1") {
       const userIndex = this.users.findIndex(user => {
-        return user.identifier === fact.data.identifier
+        return user.identifier === fact.aggregateIdentifier
       })
 
       if (!userIndex) {
         return
       }
 
-      this.users.splice(userIndex, 1, new UserAggregate(fact.data.identifier, fact.data.email, this.users[userIndex].password, this.users[userIndex].confirmed, fact.version))
+      this.users.splice(userIndex, 1, new UserAggregate(fact.aggregateIdentifier, fact.data.email, this.users[userIndex].password, this.users[userIndex].confirmed, fact.version))
       return
     }
   }

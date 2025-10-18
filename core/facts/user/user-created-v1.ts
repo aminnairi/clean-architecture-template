@@ -7,8 +7,7 @@ export class UserCreatedFactV1 implements Fact {
   public readonly date = new Date()
   public readonly identifier = randomUUID()
 
-  public constructor(public readonly version: number, public readonly data: {
-    identifier: string,
+  public constructor(public readonly version: number, public readonly aggregateIdentifier: string, public readonly data: {
     email: string,
     password: string
     confirmed: boolean

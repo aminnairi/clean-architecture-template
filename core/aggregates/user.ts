@@ -15,7 +15,7 @@ export class UserAggregate {
   public static fromFacts(facts: UserFact[]) {
     return facts.reduce((oldUser, fact) => {
       if (fact.name === "user-created-v1") {
-        return new UserAggregate(fact.data.identifier, fact.data.email, fact.data.password, fact.data.confirmed)
+        return new UserAggregate(fact.aggregateIdentifier, fact.data.email, fact.data.password, fact.data.confirmed)
       }
 
       if (!oldUser) {
@@ -24,7 +24,7 @@ export class UserAggregate {
 
       if (fact.name === "user-updated-v1") {
         return new UserAggregate(
-          fact.data.identifier,
+          fact.aggregateIdentifier,
           fact.data.email ?? oldUser?.email,
           oldUser.password,
           oldUser.confirmed,
@@ -37,8 +37,9 @@ export class UserAggregate {
   }
 
   public static create(version: number, email: string, password: string) {
-    return new UserCreatedFactV1(version, {
-      identifier: randomUUID(),
+    const aggregateIdentifier = randomUUID()
+
+    return new UserCreatedFactV1(version, aggregateIdentifier, {
       email,
       password,
       confirmed: false
@@ -46,8 +47,7 @@ export class UserAggregate {
   }
 
   public update(email?: string) {
-    return new UserUpdatedFactV1(this.version, {
-      identifier: this.identifier,
+    return new UserUpdatedFactV1(this.version, this.identifier, {
       email: email ?? this.email
     })
   }

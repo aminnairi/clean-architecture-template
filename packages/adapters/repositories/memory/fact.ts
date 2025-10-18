@@ -9,12 +9,12 @@ export class MemoryFactRepository implements FactRepository {
 
   public async findUserFacts(userIdentifier: string): Promise<UserFact[]> {
     return Array.from(this.facts.values()).filter(fact => {
-      return fact.data.identifier === userIdentifier
+      return fact.aggregateIdentifier === userIdentifier
     })
   }
 
   public async save(fact: DomainFact): Promise<ConcurrencyError | null> {
-    const key = `${fact.aggregate}-${fact.data.identifier}-${fact.version}`
+    const key = `${fact.aggregate}-${fact.aggregateIdentifier}-${fact.version}`
 
     if (this.facts.has(key)) {
       return new ConcurrencyError
