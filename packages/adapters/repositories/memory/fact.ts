@@ -5,7 +5,7 @@ import { FactRepository } from "@application/core/repositories/fact"
 import { QueryRepository } from "@application/core/repositories/query"
 
 export class MemoryFactRepository implements FactRepository {
-  public constructor(private readonly facts: Map<{ aggregate: DomainFact["aggregate"], identifier: string, version: number }, DomainFact> = new Map(), private readonly queries: QueryRepository[] = []) { }
+  public constructor(private readonly facts: Map<string, DomainFact> = new Map(), private readonly queries: QueryRepository[] = []) { }
 
   public async findUserFacts(userIdentifier: string): Promise<UserFact[]> {
     return Array.from(this.facts.values()).filter(fact => {
@@ -14,11 +14,13 @@ export class MemoryFactRepository implements FactRepository {
   }
 
   public async save(fact: DomainFact): Promise<ConcurrencyError | null> {
-    if (this.facts.has({ aggregate: fact.aggregate, identifier: fact.data.identifier, version: fact.version })) {
+    const key = `${fact.aggregate}-${fact.data.identifier}-${fact.version}`
+
+    if (this.facts.has(key)) {
       return new ConcurrencyError
     }
 
-    this.facts.set({ aggregate: fact.aggregate, identifier: fact.data.identifier, version: fact.version }, fact)
+    this.facts.set(key, fact)
 
     this.queries.forEach(query => {
       query.handle(fact)
