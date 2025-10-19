@@ -1,8 +1,8 @@
 import { PasswordService } from "@application/core/services/password";
 import { QueryRepository } from "@application/core/repositories/query";
-import { UnexpectedError } from "@application/core/errors/unexpected-error";
 import { AuthenticationService } from "@application/core/services/authentication";
 import { UnconfirmedAccountError } from "@application/core/errors/unconfirmed-account";
+import { UnauthorizedError } from "../errors/unauthorized";
 
 export class LoginCommand {
   public constructor(
@@ -15,17 +15,17 @@ export class LoginCommand {
     const user = await this.queryRepository.findUserByEmail(email)
 
     if (!user) {
-      return new UnexpectedError
+      return new UnauthorizedError
     }
 
-    if (!user.confirmed) {
+    if (!user.isConfirmed()) {
       return new UnconfirmedAccountError
     }
 
     const isValidPassword = await this.passwordService.isValid(password, user.password)
 
     if (!isValidPassword) {
-      return new UnexpectedError
+      return new UnauthorizedError
     }
 
     const token = this.authenticationService.createToken(user.identifier)
