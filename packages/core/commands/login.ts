@@ -4,7 +4,7 @@ import { UnexpectedError } from "@application/core/errors/unexpected-error";
 import { AuthenticationService } from "@application/core/services/authentication";
 import { UnconfirmedAccountError } from "@application/core/errors/unconfirmed-account";
 
-export class Login {
+export class LoginCommand {
   public constructor(
     private readonly queryRepository: QueryRepository,
     private readonly passwordService: PasswordService,
