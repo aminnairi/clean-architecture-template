@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "type": "module",
+  "name": "@application/library",
+  "description": "Library",
+  "version": "0.1.0"
+}
