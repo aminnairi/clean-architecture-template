@@ -2,6 +2,7 @@ import { UserAggregate } from "@application/core/aggregates/user";
 import { FactRepository } from "@application/core/repositories/fact";
 import { NotificationService } from "@application/core/services/notification";
 import { PasswordService } from "../services/password";
+import { createHash } from "crypto"
 
 export class RegisterCommand {
   public constructor(
@@ -11,9 +12,9 @@ export class RegisterCommand {
   ) { }
 
   public async execute(request: { email: string, password: string }) {
-    const version = 0
     const password = await this.passwordService.hash(request.password)
-    const user = UserAggregate.create(version, request.email, password)
+    const confirmationToken = createHash("sha256").digest("base64")
+    const user = UserAggregate.create(request.email, password, confirmationToken)
 
     const error = await this.eventRepository.save(user)
 
@@ -23,6 +24,9 @@ export class RegisterCommand {
 
     await this.notificationService.notifyRegistrationSucceeded()
 
-    return user.aggregateIdentifier
+    return {
+      identifier: user.aggregateIdentifier,
+      confirmationToken
+    }
   }
 }
