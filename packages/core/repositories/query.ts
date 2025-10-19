@@ -5,4 +5,5 @@ export interface QueryRepository {
   handle(fact: DomainFact): void
   findUserByIdentifier(identifier: string): Promise<UserAggregate | null>
   findUserByEmail(email: string): Promise<UserAggregate | null>
+  findUserByConfirmationToken(confirmationToken: string): Promise<UserAggregate | null>
 }
