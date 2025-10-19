@@ -2,9 +2,9 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "core",
-    "library",
+    "packages/core",
+    "packages/library",
     "packages/adapters",
-    "packages/console"
+    "apps/console"
   ]
 }
