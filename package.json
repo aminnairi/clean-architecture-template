@@ -3,6 +3,7 @@
   "type": "module",
   "workspaces": [
     "core",
+    "library",
     "packages/adapters",
     "packages/console"
   ]
