@@ -10,6 +10,6 @@ export class UserCreatedFactV1 implements Fact {
   public constructor(public readonly version: number, public readonly aggregateIdentifier: string, public readonly data: {
     email: string,
     password: string
-    confirmed: boolean
+    confirmationToken: string | null
   }) { }
 }
