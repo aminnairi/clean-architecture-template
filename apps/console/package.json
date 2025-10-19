@@ -5,7 +5,7 @@
   "description": "Console application",
   "version": "0.1.0",
   "scripts": {
-    "start": "tsx index.ts"
+    "start": "JSONWEBTOKEN_SECRET=changemenow tsx index.ts"
   },
   "devDependencies": {
     "@types/node": "^24.8.0"
