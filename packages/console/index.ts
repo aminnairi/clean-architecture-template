@@ -22,9 +22,9 @@ async function main() {
     return
   }
 
-  const user = await findUserQuery.execute(createdUserIdentifier)
+  const findUserResponse = await findUserQuery.fetch({ identifier: createdUserIdentifier })
 
-  console.log(user)
+  console.log(findUserResponse.user)
 }
 
 await main()
