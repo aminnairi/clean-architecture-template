@@ -2,37 +2,45 @@ import { randomUUID } from "crypto";
 import { UserFact } from "@application/core/facts/user/fact";
 import { UserCreatedFactV1 } from "../facts/user/user-created-v1";
 import { UserUpdatedFactV1 } from "../facts/user/user-updated-v1";
+import { Aggregate } from ".";
+import { match } from "@application/library/match"
 
-export class UserAggregate {
+export class UserAggregate implements Aggregate {
   public constructor(
     public readonly identifier: string = "",
     public readonly email: string = "",
     public readonly password: string = "",
     public readonly confirmed: boolean = false,
-    public readonly version = 0
+    public readonly version = 0,
+    public readonly createdAt = new Date(),
+    public readonly updatedAt = new Date()
   ) { }
 
   public static fromFacts(facts: UserFact[]) {
     return facts.reduce((oldUser, fact) => {
-      if (fact.name === "user-created-v1") {
-        return new UserAggregate(fact.aggregateIdentifier, fact.data.email, fact.data.password, fact.data.confirmed)
-      }
+      return match(fact, {
+        "user-created-v1": userCreatedFact => {
+          return new UserAggregate(
+            userCreatedFact.aggregateIdentifier,
+            userCreatedFact.data.email,
+            userCreatedFact.data.password,
+            userCreatedFact.data.confirmed
+          )
+        },
+        "user-updated-v1": userUpdatedFact => {
+          if (!oldUser) {
+            return oldUser
+          }
 
-      if (!oldUser) {
-        return oldUser
-      }
-
-      if (fact.name === "user-updated-v1") {
-        return new UserAggregate(
-          fact.aggregateIdentifier,
-          fact.data.email ?? oldUser?.email,
-          oldUser.password,
-          oldUser.confirmed,
-          oldUser.version + 1
-        )
-      }
-
-      return oldUser
+          return new UserAggregate(
+            userUpdatedFact.aggregateIdentifier,
+            userUpdatedFact.data.email ?? oldUser?.email,
+            oldUser.password,
+            oldUser.confirmed,
+            oldUser.version + 1
+          )
+        }
+      })
     }, null as UserAggregate | null)
   }
 
