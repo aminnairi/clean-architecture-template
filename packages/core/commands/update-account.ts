@@ -6,7 +6,7 @@ import { AuthenticationService } from "../services/authentication";
 import { FactRepository } from "../repositories/fact";
 import { UserAggregate } from "../aggregates/user";
 
-export class UpdateAccount {
+export class UpdateAccountCommand {
   public constructor(
     private readonly factRepository: FactRepository,
     private readonly authenticationService: AuthenticationService,
