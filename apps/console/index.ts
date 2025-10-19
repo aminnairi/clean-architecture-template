@@ -7,6 +7,7 @@ import { BcryptPasswordService } from "@application/adapters/services/bcrypt/pas
 import { LoginCommand } from "@application/core/commands/login";
 import { JsonwebtokenAuthenticationService } from "@application/adapters/services/jsonwebtoken/authentication"
 import { UpdateAccountCommand } from "@application/core/commands/update-account";
+import { ConfirmCommand } from "@application/core/commands/confirm";
 
 async function main() {
   if (!("JSONWEBTOKEN_SECRET" in process.env)) {
@@ -24,20 +25,74 @@ async function main() {
   // Registration
   const registerCommand = new RegisterCommand(factRepository, passwordService, notificationService)
 
-  const createdUserIdentifier = await registerCommand.execute({ email: "user@domain.com", password: "Password" })
+  console.log("Registrating...")
+
+  const user = await registerCommand.execute({ email: "user@domain.com", password: "Password" })
+
+  if (user instanceof Error) {
+    console.error("Error while trying to register")
+    return
+  }
+
+  console.log("Registrated.")
+
+  // Confirmation registration
+  const confirmCommand = new ConfirmCommand(queryRepository, factRepository)
+
+  console.log("Confirming account...")
+
+  const confirmResponse = await confirmCommand.execute(user.confirmationToken)
+
+  if (confirmResponse instanceof Error) {
+    if (confirmResponse.name === "AlreadyConfirmedError") {
+      console.error("Account already confirmed.")
+      return
+    }
+
+    if (confirmResponse.name === "ConcurrencyError") {
+      console.error("Unexpected error, please try again later.")
+      return
+    }
+
+    if (confirmResponse.name === "ConfirmationTokenError") {
+      console.error("Bad confirmation token, please check your token.")
+      return
+    }
+
+    console.error("Error while trying to confirm account.")
+    return
+  }
+
+  console.log("Account confirmed.")
 
   // Login
   const loginCommand = new LoginCommand(queryRepository, passwordService, authenticationService)
 
+  console.log("Login...")
+
   const token = await loginCommand.execute("user@domain.com", "Password")
 
   if (token instanceof Error) {
+    if (token.name === "UnauthorizedError") {
+      console.error("Invalid credentials")
+      return
+    }
+
+    if (token.name === "UnconfirmedAccountError") {
+      console.error("Please confirm your account first before attempting to login again.")
+      return
+    }
+
     console.error("Error while login attempt.")
     return
   }
 
+  console.log("Successfully logged in.")
+
   // Profile update
   const updateProfileCommand = new UpdateAccountCommand(factRepository, authenticationService, passwordService)
+
+  console.log("Profile update...")
 
   const updateProfileResponse = await updateProfileCommand.execute({
     token,
@@ -46,19 +101,31 @@ async function main() {
   })
 
   if (updateProfileResponse instanceof Error) {
+    if (updateProfileResponse.name === "AccountNotFoundError") {
+      console.error("Account not found.")
+      return
+    }
+
+    if (updateProfileResponse.name === "ConcurrencyError") {
+      console.error("Account informations staled.")
+      return
+    }
+
+    if (updateProfileResponse.name === "UnauthorizedError") {
+      console.error("Please, login again before updating your account.")
+      return
+    }
+
     console.error("Unable to update profile.")
     return
   }
 
+  console.log("Successfully updated profile.")
+
   // User display for debug only
   const findUserQuery = new FindUserQuery(queryRepository)
 
-  if (createdUserIdentifier instanceof Error) {
-    console.error("Unable to find user")
-    return
-  }
-
-  const findUserResponse = await findUserQuery.fetch({ identifier: createdUserIdentifier })
+  const findUserResponse = await findUserQuery.fetch({ identifier: user.identifier })
 
   console.log(findUserResponse.user)
 }
