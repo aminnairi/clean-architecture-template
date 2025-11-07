@@ -7,7 +7,7 @@ export class UserConfirmedV1 implements Fact {
   public readonly name = "user-confirmed-v1"
   public readonly date = new Date()
 
-  public constructor(public readonly version: number, public readonly aggregateIdentifier: string, public readonly data: {
+  public constructor(public readonly revision: number, public readonly aggregateIdentifier: string, public readonly data: {
     updatedAt: Date
   }) { }
 }

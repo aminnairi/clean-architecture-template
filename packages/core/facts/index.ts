@@ -3,7 +3,7 @@ export interface Fact {
   readonly aggregate: string
   readonly aggregateIdentifier: string
   readonly name: string
-  readonly version: number
+  readonly revision: number
   readonly date: Date
   readonly data: unknown
 }

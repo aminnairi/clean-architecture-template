@@ -1,6 +1,6 @@
 export interface Aggregate {
   identifier: string
-  version: number
+  revision: number
   createdAt: Date
   updatedAt: Date
 }

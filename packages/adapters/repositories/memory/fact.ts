@@ -14,7 +14,7 @@ export class MemoryFactRepository implements FactRepository {
   }
 
   public async save(fact: DomainFact): Promise<ConcurrencyError | null> {
-    const key = `${fact.aggregate}-${fact.aggregateIdentifier}-${fact.version}`
+    const key = `${fact.aggregate}-${fact.aggregateIdentifier}-${fact.revision}`
 
     if (this.facts.has(key)) {
       return new ConcurrencyError

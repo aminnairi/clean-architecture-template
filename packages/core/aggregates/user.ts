@@ -12,7 +12,7 @@ export class UserAggregate implements Aggregate {
     public readonly email: string = "",
     public readonly password: string = "",
     public readonly confirmationToken: string | null = null,
-    public readonly version = 0,
+    public readonly revision = 0,
     public readonly createdAt = new Date(),
     public readonly updatedAt = new Date()
   ) { }
@@ -38,7 +38,7 @@ export class UserAggregate implements Aggregate {
             userUpdatedFact.data.email ?? oldUser?.email,
             oldUser.password,
             oldUser.confirmationToken,
-            oldUser.version + 1
+            oldUser.revision + 1
           )
         },
         "user-confirmed-v1": userConfirmedFact => {
@@ -51,7 +51,7 @@ export class UserAggregate implements Aggregate {
             oldUser.email,
             oldUser.password,
             null,
-            oldUser.version + 1,
+            oldUser.revision + 1,
             oldUser.createdAt,
             userConfirmedFact.data.updatedAt
           )
@@ -72,7 +72,7 @@ export class UserAggregate implements Aggregate {
   }
 
   public confirm() {
-    return new UserConfirmedV1(this.version + 1, this.identifier, {
+    return new UserConfirmedV1(this.revision + 1, this.identifier, {
       updatedAt: new Date()
     })
   }
@@ -82,7 +82,7 @@ export class UserAggregate implements Aggregate {
   }
 
   public update(email?: string) {
-    return new UserUpdatedFactV1(this.version + 1, this.identifier, {
+    return new UserUpdatedFactV1(this.revision + 1, this.identifier, {
       email: email ?? this.email
     })
   }
