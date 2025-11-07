@@ -22,7 +22,7 @@ export class RegisterCommand {
       return error
     }
 
-    await this.notificationService.notifyRegistrationSucceeded()
+    await this.notificationService.notifyRegistrationSucceeded(confirmationToken)
 
     return {
       identifier: user.aggregateIdentifier,

@@ -1,3 +1,3 @@
 export interface NotificationService {
-  notifyRegistrationSucceeded(): Promise<void>
+  notifyRegistrationSucceeded(confirmationToken: string): Promise<void>
 }
