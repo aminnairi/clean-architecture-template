@@ -1,5 +1,4 @@
 import { AccountNotFoundError } from "@application/core/errors/account-not-found";
-import { QueryRepository } from "@application/core/repositories/query";
 import { UnauthorizedError } from "../errors/unauthorized";
 import { PasswordService } from "../services/password";
 import { AuthenticationService } from "../services/authentication";
